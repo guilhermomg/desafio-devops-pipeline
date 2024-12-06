@@ -1,0 +1,18 @@
+{
+  "name": "desafio-devops-pipeline",
+  "version": "1.0.0",
+  "description": "Aplicação simples para ser implantada com pipeline CI/CD",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "jest": "^27.4.5"
+  },
+  "author": "Seu Nome",
+  "license": "MIT"
+}
