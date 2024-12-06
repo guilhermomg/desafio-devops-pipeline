@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js (ou outro ambiente)
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    if: success() # Executa somente se o build e os testes passarem
+    
+    steps:
+      - name: Deploy to Dev
+        run: |
+          terraform init
+          terraform apply -auto-approve -var="env=dev"
+
+  verify-dev-health:
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Verify health in Dev
+        run: |
+          # Comando ou script para verificar saúde da aplicação (ex: curl ou algum teste de integração)
+          curl -f http://dev-url/health || exit 1
+
+  deploy-prod:
+    needs: verify-dev-health
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Deploy to Prod
+        run: |
+          terraform init
+          terraform apply -auto-approve -var="env=prod"
